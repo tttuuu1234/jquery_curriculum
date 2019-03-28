@@ -42,6 +42,27 @@
       // .offset().top 要素の位置を取得します。
       // .fadeIn() 要素をフェードインさせる。
       // .fadeOut() 要素をフェードアウトさせる。
+
+      $(window).scroll(function(){
+          var scroll = $(this).scrollTop();
+          scroll >= 100?$(".scrollTopBtn").fadeIn():$(".scrollTopBtn").fadeOut();//? は条件演算子 ?以降の式1がtrueなら式1を、farseなら式2を返す
+        }),
+
+        $(".scrollTopBtn").click(function(){
+            $("html, body").animate({scrollTop: 0});
+        }),
+        
+        $(".menu__btn").click(function(){
+          var menu=$(this).data("scroll-place-type");
+          $(".title").each(function(){
+            var title=$(this).data("scroll-place-type"); //titleのdataをそれぞれ取得
+            if(menu===title){
+              var offset=$(this).offset().top; //thisでなく.titleにしたらscrollしない 何故？
+              $("html, body").animate({scrollTop:offset});
+            }
+          })
+        });
+
     </script>
   </body>
 </html>

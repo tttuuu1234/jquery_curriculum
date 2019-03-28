@@ -30,6 +30,16 @@
       // .eq() 引数に応じたindexの要素を指定します。
       // .addClass() クラスを追加します。
       // .removeClass() クラスを削除します。
+
+      $(function(){
+        $(".nav").find("li").click(function(){
+          var index = $(this).index();
+          $(".contents").find("li").addClass("is-hidden").eq(index).removeClass("is-hidden"); 
+          //removeclassはクリックされたnavのliと同じindex番号のcontentsのliに適用される　メソッドの順番は大切
+          //addclassはクリックされた以外のものに適用される
+          //.eq().addClass().removeClass()としてしまうとremoveは適用されず、addだけが適用されていく
+        })
+      })
     </script>
   </body>
 </html>

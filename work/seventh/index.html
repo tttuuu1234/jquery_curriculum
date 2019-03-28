@@ -34,6 +34,48 @@
       // .data() 要素のdata属性を取得します。
       // .width() 要素の幅を取得します。
       // .length 要素の個数を取得します。
+
+      $(function(){
+        var imgSize = $("img").width(); 
+        var imgLength = $("img").length; 
+        var current = 0; //初期値
+        var imgList = []; //空の配列
+
+        for(var i = 0; i < imgLength; i++){ //要素の数だけ幅を取得
+          imgList[i] = -i * imgSize; //-iとしなきゃスライドした時に消えてしまう
+          console.log(imgList[i]);
+        }
+
+        function slide(){ 
+          $(".slider-list").animate({
+            "left": imgList[current] //leftなのは1週しているイメージで imgListのcurrent番目にスライド
+          },500)
+        }
+
+        $(".is-prev").click(function(){
+          var dataPrev = $(this).data("ctrl");
+          if(current < 1 && dataPrev === "prev"){ //currentが1より小さい場合かつdataPrevとprevが等しい場合
+            current = imgLength; //imgLengthは4
+            current--; //currentに代入された4から1を引き3になる
+            slide();  //imgList[3]にスライド
+          }else if(current > 0 && dataPrev === "prev"){ //currentが0より大きい場合
+            current--;
+            slide();
+          }
+        })
+
+        $(".is-next").click(function(){
+          var dataNext = $(this).data("ctrl");
+          if(current == imgLength-1 && dataNext === "next"){ //currentが3の場合
+            current=0; //currentに0を入れる
+            slide(); //imgList[0]にスライド
+          }else if(current < imgLength && dataNext === "next"){ //currentがimgLengthより小さい場合
+            current++; //
+            slide();
+          }
+        })
+      })
+
     </script>
   </body>
 </html>
