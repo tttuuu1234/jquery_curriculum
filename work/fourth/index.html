@@ -58,11 +58,11 @@
       // .stop() 現在動作中のアニメーション処理を全て中止します。
 
       $(function(){
-        $(".menu__list").children().hover(function(){
-          $(this).children().stop().slideDown();
+        $(".menu__list > li").hover(function(){
+          $(this).children(".menu__list__childList").stop().slideDown(); //trueを指定しなきゃhoverを左右にした時にhoverした回数分downとupが繰り返される
         },
         function(){
-          $(this).children().next().stop().slideUp(); //next()つかうことでmunu__list__childListでslideUpがstop()する？
+          $(this).children(".menu__list__childList").stop().slideUp();
           }
         )
       })

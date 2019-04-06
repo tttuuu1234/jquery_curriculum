@@ -50,7 +50,7 @@
           dataType: "json"
         }).done(function(data){ //dataにdataTypeで指定した値が入っている ここではjson
           var dataColors = data.colorsArray; //dataの中のcolorsArrayを取得して変数に格納
-          var colorListItem = ""; //空の配列を用意してeachで取得した値をそれぞれ格納する用
+          var colorListItem = ""; //空の文字列を用意してeachで取得した値をそれぞれ格納する用
           $.each(dataColors, function(i){ //function()内の第一引数には、index番号、第二引数には、valが入る
             colorListItem+='<li class="colorList__item"><p class="colorList__title" style="background-color: '+dataColors[i].hexValue+';">'+dataColors[i].colorName+'</p></li>' 
             // dataColorsの数だけ加算代入をする 配列dataColorsの中の[i]番目の中のhexValueを取得、dataColorsのなかの[i]番目の中のcolorNameを取得

@@ -102,18 +102,16 @@
         $(".select").change(function(){
           var val = $(this).val(); 
 
-          if(val == "all"){ //valが"all"と同じ時の処理
-            $("li").each(function(){
-              $(this).show();
-            })
+          if(val === "all"){ //valが"all"と同じ時の処理
+            $(".list > li").show();
           }else{
-            $("li").each(function(){  
-              var data = $(this).data("category-type"); //liのdata属性を取得して変数dataに格納
+            $(".list > li").each(function(index, element){  //elementにはliの値が一つ一つ入ってくる
+              var data = $(element).data("category-type"); //liのdata属性を取得して変数dataに格納
               
-              if(val == data){  //valとdataが同じなら表示、違う要素たちは隠す
-                $(this).show()
+              if(val === data){  //valとdataが同じなら表示、違う要素たちは隠す
+                $(element).show()
               }else{
-                $(this).hide();
+                $(element).hide();
               }
             })
           }

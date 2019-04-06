@@ -70,60 +70,70 @@
       //
 
       $(function(){
-      var pageList = 0;
-      var nextKeyword = "";
-      var lists = $(".lists");
-        $("#js-search-button").click(function(){
-          rakuten();
-      })
+        var pageList = 0;
+        var beforeKeyword = "";
+        var lists = $(".lists");
+          $("#js-search-button").click(function(){
+            rakuten();
+        })
 
-      function rakuten(){
-        var keyword = $("#js-search-word").val();
-        if(nextKeyword === keyword){ //厳密に等しい場合
-          pageList = pageList + 1;
-        }else{
-          lists.empty(); //keyWordが等しく無かったらlistsを空にする
-          pageList = 1; //新しく検索したキーワードの1ページ目を表示
-        }
-        nextKeyword = keyword;
-        
-        $.ajax({
-          url: "https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404",
-          type: "get",
-          dataType: "json",
-          data: {
-            applicationId: '1019399324990976605',
-            keyword: keyword, //変数
-            hits: 20,
-            booksGenreId: '001',
-            page: pageList
+        function rakuten(){
+          var keyword = $("#js-search-word").val();
+          if(beforeKeyword === keyword){ //厳密に等しい場合
+            pageList = pageList + 1;
+          }else{
+            lists.empty(); //keyWordが等しく無かったらlistsを空にする
+            pageList = 1; //新しく検索したキーワードの1ページ目を表示
           }
-        }).done(done).fail(fail); //.done()、.fail()の引数には関数だけを渡す。関数の()を共に渡したら実行されない
+          beforeKeyword = keyword;
+        
+          $.ajax({
+            url: "https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404", //リクエストを送るURL
+            type: "get", // getはサーバーからデータ取得 postはサーバーにデータを送る
+            dataType: "json", //データを受け取る形式
+            data: { //送ってるdata
+              applicationId: '1019399324990976605',
+              keyword: keyword, //変数
+              hits: 20,
+              booksGenreId: '001', //楽天ブックスにおけるジャンルを特定するためのID 今回は本に所属するジャンルのみ取得
+              page: pageList
+            }
+          }).done(success).fail(error)
+        }; //.done()、.fail()の引数には関数だけを渡す。関数の()を共に渡したら実行されない
 
-        function done(data){
+        function success(data){ //通信が成功した時に返ってくるオブジェクトを引数のdataで受け取っている
+          console.log(data);
           if(data.hits > 0){  //hitsが0より上の場合
             var book = "";
-            $.each(data.Items, function(i, v){
+            $.each(data.Items, function(i, v){ //dataの中のItmesをeachで回す Itmes配列の中の一つ一つがvに入る
               book+="<li class='lists__item'><div class='lists__item__inner'><a href='"+v.Item.itemUrl+"' class='lists__item__link' target='_blank'><img src='"+v.Item.largeImageUrl+"' class='lists__item__img' alt='"+v.Item.title+"'> <p class='lists__item__detail'>作品名："+v.Item.title+"</p><p class='lists__item__detail'>作者　："+v.Item.author+"</p><p class='lists__item__detail'>出版社："+v.Item.publisherName+"</p></a></div></li>"
-              //空の文字列bookに1つのdataを入れていき20件取得させる APIからjsonを受け取ってそのjsonの中のItemの中のtitleなどを取得
+              //空の文字列bookに1つのdataを入れていき20件取得させる APIからjsonを受け取ってそのjsonの中のItemsの中のItemの中のtitleなどを取得
+              // console.log(data);
             })          
             lists.prepend(book); //appendだと同じワードで再度検索した時に次の20件は前の20件の下に来てしまう eachの中でこの文を書くと次の20件は下に来ないで新しいpageとして更新されてしまう
-          } else if(data.hits === 0){ //hitsが0の場合
+          } else { //hitsが0の場合
             lists.html('<p class="message">検索結果が見つかりませんでした。</br>別のキーワードで検索して下さい。</p>')
           }
         }
 
-        function fail(data){
-          if(keyword === ""){ //keywordが空の場合
-            lists.empty();
-            lists.html('<p class="message">検索ワードの指定がありません。<br>検索ワードを指定し、再度検索をしてください。</p>')
-          }else if(keyword.length === 1){ //keywordの文字数が1文字の場合
-            lists.empty();
-            lists.html('<p class="message">検索ワードの文字数が足りません。<br>2文字以上指定し、再度検索をして下さい。</p>')
-          }  
+        function error(data){ //通信に失敗した時に返ってくるオブジェクトを引数のdataで受け取っている
+          console.log(data);
+          var responseJson = data.responseJSON; //dataからresponseJSONを取ってくる
+          var status = data.status;
+          if(responseJson === undefined){ //ネットが途切れている時はresponceJSONは空
+            console.log(responseJson); 
+            lists.html('<p class="message">通信が途切れています。</br>接続状況を確認して下さい。</p>');
+          } else { //responsejsonがundefindではない時
+            if(status === 400){ //statusが400の時
+              lists.html('<p class= "message">検索ワードの指定、もしくは文字数が足りません。</br>2文字以上指定して下さい。</p>');
+            } else if(status === 429){
+              lists.html('<p class= "message">検索のリクエストが上限に達しました。</br>再度検索ワードの指定をし、検索をして下さい。</p>');
+            } else {
+              lists.html('<p class= "message">' + responseJson.error_description + '</p>'); //それ以外のエラー
+            }
+          }
         }
-      }
-    })
+      })
     </script>
   </body>
 </html>
